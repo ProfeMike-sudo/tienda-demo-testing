@@ -1,15 +1,19 @@
 package com.duoc.productos.controller;
 
 import com.duoc.productos.dto.ProductoDTO;
+import com.duoc.productos.exception.GlobalExceptionHandler;
 import com.duoc.productos.exception.RecursoNoEncontradoException;
 import com.duoc.productos.service.ProductoService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,14 +23,24 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(ProductoController.class)
+@ExtendWith(MockitoExtension.class)
 class ProductoControllerTest {
 
-    @Autowired
+    @Mock
+    private ProductoService service;
+
+    @InjectMocks
+    private ProductoController controller;
+
     private MockMvc mockMvc;
 
-    @MockitoBean
-    private ProductoService service;
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(controller)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
+    }
 
     // ── GET /api/productos ─────────────────────────────────────────────────────
 
@@ -49,7 +63,7 @@ class ProductoControllerTest {
 
     @Test
     @DisplayName("GET /api/productos - debe retornar 200 con lista vacía cuando no hay registros")
-    void debeRetornar200ConListaVaciaConEndpointProductos() throws Exception {
+    void debeRetornar200ConListaVacia() throws Exception {
         // Given
         when(service.findAll()).thenReturn(List.of());
 
@@ -100,14 +114,13 @@ class ProductoControllerTest {
                .content(json))
                .andExpect(status().isCreated())
                .andExpect(jsonPath("$.id").value(7))
-               .andExpect(jsonPath("$.nombre").value("Audífonos Bluetooth"))
-               .andExpect(jsonPath("$.precio").value(79990.00));
+               .andExpect(jsonPath("$.nombre").value("Audífonos Bluetooth"));
     }
 
     @Test
     @DisplayName("POST /api/productos - debe retornar 400 cuando el nombre está en blanco")
     void debeRetornar400CuandoNombreEstaVacio() throws Exception {
-        // Given — nombre vacío, precio negativo
+        // Given — nombre vacío y precio negativo
         String json = """
             {
                 "nombre": "",

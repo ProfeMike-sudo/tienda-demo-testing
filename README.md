@@ -242,18 +242,28 @@ class ProductoServiceTest {
 > el contexto Spring, no necesita base de datos y termina en milisegundos.
 > Úsalo siempre que puedas para tests de servicio.
 
-### Test de Controlador con MockMvc (Spring Boot 4.x)
+### Test de Controlador con MockMvc
 
 ```java
-@WebMvcTest(ProductoController.class)  // ← Solo carga la capa web, sin JPA ni BD
+@ExtendWith(MockitoExtension.class)   // ← Mockito puro, sin contexto Spring
 class ProductoControllerTest {
 
-    @Autowired
+    @Mock
+    private ProductoService service;
+
+    @InjectMocks
+    private ProductoController controller;
+
     private MockMvc mockMvc;
 
-    // En Spring Boot 4.x se usa @MockitoBean (antes era @MockBean en Spring Boot 3.x)
-    @MockitoBean
-    private ProductoService service;
+    @BeforeEach
+    void setUp() {
+        // standaloneSetup: configura MockMvc sin levantar el contexto Spring completo
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(controller)
+                .setControllerAdvice(new GlobalExceptionHandler()) // carga el manejador de errores
+                .build();
+    }
 
     @Test
     @DisplayName("GET /api/productos - debe retornar 200 con lista de productos")
