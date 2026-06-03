@@ -1,99 +1,104 @@
-# 🛒 Tienda Demo Testing — DSY1103
+# Tienda Demo Testing — DSY1103
 
-**DuocUC | Escuela de Informática y Telecomunicaciones**  
+**DuocUC | Escuela de Informática y Telecomunicaciones**
 **Asignatura:** Desarrollo Fullstack I — DSY1103 · Semestre 2026-1
 
 ---
 
-## 📋 ¿Qué es este proyecto?
+## ¿Qué es este proyecto?
 
-Este repositorio es el proyecto de referencia para la **Unidad de Pruebas Unitarias** de DSY1103. Contiene una arquitectura de **microservicios Spring Boot** (Tienda Demo) con:
+Repositorio de referencia para la **Unidad de Pruebas Unitarias** de DSY1103. Contiene una arquitectura de **microservicios Spring Boot** con:
 
 - `ms-productos` — Microservicio catálogo de productos (puerto **8081**)
 - `ms-pedidos` — Microservicio de órdenes (puerto **8082**)
 
-El profesor ha desplegado este proyecto en un servidor **AWS EC2** para que puedas explorarlo con Swagger UI antes de implementar los tests en tu propio proyecto semestral.
+El profesor tiene este proyecto desplegado en un servidor **AWS EC2** para que puedas explorar los endpoints con Swagger UI antes de implementar los tests en tu proyecto semestral.
 
 ---
 
-## 🌐 Servidor AWS del Profesor (solo exploración)
+## Stack y versiones
+
+| Tecnología | Versión | Rol |
+|------------|---------|-----|
+| Java | 21 | Lenguaje principal |
+| Spring Boot | **4.0.6** | Framework web |
+| Spring Data JPA | 4.x | Acceso a datos |
+| MySQL | 8.0 | Base de datos producción |
+| H2 | 2.x | Base de datos en memoria (solo tests) |
+| Docker / Docker Compose | Latest | Contenedores |
+| JUnit 5 (Jupiter) | **6.0.3** | Framework de pruebas |
+| Mockito | 5.x | Simulación de dependencias |
+| springdoc-openapi | **3.0.3** | Swagger UI / OpenAPI 3 |
+
+> **Compatibilidad importante:** Spring Boot 4.x requiere **springdoc-openapi 3.x** (no 2.x).
+> Si ves el error `Failed to load API definition — response status is 500 /v3/api-docs`,
+> revisa que tu `pom.xml` tenga `<version>3.0.3</version>` para `springdoc-openapi-starter-webmvc-ui`.
+
+---
+
+## Servidor AWS del Profesor (solo exploración)
 
 | Recurso | URL |
 |---------|-----|
-| 📦 Swagger Productos | `http://52.23.53.73:8081/doc/swagger-ui.html` |
-| 🛍️ Swagger Pedidos | `http://52.23.53.73:8082/doc/swagger-ui.html` |
+| Swagger Productos | `http://52.23.53.73:8081/doc/swagger-ui.html` |
+| Swagger Pedidos | `http://52.23.53.73:8082/doc/swagger-ui.html` |
 
-> **Importante:** El servidor es solo para exploración y referencia. Los tests debes ejecutarlos en tu máquina local.
-
----
-
-## 🛠️ Tecnologías del Proyecto
-
-| Tecnología | Versión | Uso |
-|------------|---------|-----|
-| Java | 17+ | Lenguaje principal |
-| Spring Boot | 3.x | Framework web |
-| Spring Data JPA | 3.x | Acceso a datos |
-| MySQL | 8.0 | Base de datos |
-| Docker / Docker Compose | Latest | Contenedores |
-| JUnit 5 | 5.x | Framework de pruebas |
-| Mockito | 5.x | Simulación de dependencias |
-| Swagger / OpenAPI 3 | 2.6.0 | Documentación de la API |
+> El servidor es solo para exploración y referencia. Los tests los ejecutas en tu máquina local.
 
 ---
 
-## 🚀 Parte 1: Explorar el servidor del profesor
+## Datos de ejemplo en el servidor
 
-### Paso 1 — Acceder a Swagger UI
+El servidor ya tiene datos cargados para que pruebes los endpoints directamente en Swagger.
 
-Abre cualquiera de estas URLs en tu navegador:
+### Productos disponibles
+
+| ID | Nombre | Precio | Stock |
+|----|--------|--------|-------|
+| 1 | Laptop Lenovo IdeaPad | $649.990 | 10 |
+| 2 | Mouse Logitech MX Master 3 | $89.990 | 25 |
+| 3 | Teclado Mecánico Redragon | $59.990 | 15 |
+| 4 | Monitor Samsung 24" | $199.990 | 8 |
+| 5 | Audífonos Sony WH-1000XM5 | $289.990 | 12 |
+| 6 | Webcam Logitech C920 | $79.990 | 20 |
+
+### Pedidos registrados
+
+| ID | Producto | Cantidad | Total | Estado |
+|----|----------|----------|-------|--------|
+| 1 | Laptop Lenovo (ID 1) | 2 | $1.299.980 | PENDIENTE |
+| 2 | Teclado Mecánico (ID 3) | 1 | $59.990 | CANCELADO |
+| 3 | Mouse Logitech (ID 2) | 3 | $269.970 | PENDIENTE |
+
+Puedes crear más datos usando **"Try it out"** en Swagger UI.
+
+---
+
+## Parte 1: Explorar el servidor del profesor
+
+### Paso 1 — Abrir Swagger UI
 
 - `http://52.23.53.73:8081/doc/swagger-ui.html` (Productos)
 - `http://52.23.53.73:8082/doc/swagger-ui.html` (Pedidos)
 
-### Paso 2 — Explorar los endpoints
+### Paso 2 — Probar un endpoint
 
-Verás una lista de todos los endpoints agrupados por controlador. Por ejemplo:
-
-```
-GET  /api/productos        → Listar todos los productos
-POST /api/productos        → Crear un producto
-GET  /api/productos/{id}   → Buscar producto por ID
-PUT  /api/productos/{id}   → Actualizar producto
-DELETE /api/productos/{id} → Eliminar producto
-```
-
-### Paso 3 — Probar un endpoint
-
-1. Haz clic en `GET /api/productos`
-2. Haz clic en **"Try it out"**
-3. Presiona **"Execute"**
-4. Observa la respuesta JSON — esto es lo que tus tests deben verificar
+1. Clic en `GET /api/productos`
+2. Clic en **"Try it out"** → **"Execute"**
+3. Observa la respuesta JSON — esto es lo que tus tests verificarán
 
 ---
 
-## 💻 Parte 2: Ejecutar el proyecto en tu máquina local
+## Parte 2: Ejecutar el proyecto en tu máquina local
 
 ### Requisitos previos
 
-Instala y verifica:
-
 ```bash
-# Java 17 o superior
-java -version
-
-# Maven 3.8+
-mvn -version
-
-# Docker Desktop (para levantar las bases de datos)
-docker --version
-docker compose version
-
-# Git
+java -version     # Java 17 o superior (recomendado 21)
+mvn -version      # Maven 3.8+
+docker --version  # Docker Desktop
 git --version
 ```
-
-> **¿No tienes Docker?** Descárgalo en [docker.com/get-started](https://www.docker.com/get-started)
 
 ### Paso 1 — Clonar el repositorio
 
@@ -108,102 +113,76 @@ cd tienda-demo-testing
 docker compose up --build
 ```
 
-Este comando:
+Esto:
 1. Crea 2 bases de datos MySQL (`productos_db` y `pedidos_db`)
 2. Compila y levanta `ms-productos` en el puerto 8081
 3. Compila y levanta `ms-pedidos` en el puerto 8082
 
-> La primera vez puede tardar 5-10 minutos descargando imágenes.
+> La primera vez puede tardar 10-15 minutos descargando imágenes y dependencias Maven.
 
 ### Paso 3 — Verificar que funciona
 
 ```bash
-# Ver que los 4 contenedores estén corriendo
-docker ps
-
-# Probar ms-productos
 curl http://localhost:8081/api/productos
-
-# Probar ms-pedidos
 curl http://localhost:8082/api/pedidos
 ```
 
-Abre en el navegador:
-- `http://localhost:8081/doc/swagger-ui.html` (Productos local)
-- `http://localhost:8082/doc/swagger-ui.html` (Pedidos local)
+Swagger local:
+- `http://localhost:8081/doc/swagger-ui.html`
+- `http://localhost:8082/doc/swagger-ui.html`
 
 ---
 
-## 🧪 Parte 3: Ejecutar las Pruebas Unitarias
+## Parte 3: Ejecutar las Pruebas Unitarias
 
-### Paso 1 — Abrir un microservicio en tu IDE
+Los tests **no necesitan Docker ni MySQL** — usan una base de datos H2 en memoria.
 
-```bash
-# Abrir ms-productos en VS Code
-code ms-productos/
+### Ejecutar todos los tests de ms-productos
 
-# O en IntelliJ IDEA: File → Open → selecciona ms-productos/
-```
-
-### Paso 2 — Verificar las dependencias de testing en pom.xml
-
-Tu `pom.xml` debe tener (ya viene configurado en este proyecto):
-
-```xml
-<!-- JUnit 5 + Spring Test -->
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-test</artifactId>
-    <scope>test</scope>
-</dependency>
-
-<!-- Mockito (incluido en spring-boot-starter-test, pero explícito para claridad) -->
-<dependency>
-    <groupId>org.mockito</groupId>
-    <artifactId>mockito-core</artifactId>
-    <scope>test</scope>
-</dependency>
-```
-
-### Paso 3 — Estructura de los tests
-
-```
-ms-productos/
-└── src/
-    └── test/
-        └── java/
-            └── com/duoc/productos/
-                ├── MsProductosApplicationTests.java  ← Test de contexto
-                ├── service/
-                │   └── ProductoServiceTest.java      ← Tests de servicio
-                └── controller/
-                    └── ProductoControllerTest.java   ← Tests de controlador
-```
-
-### Paso 4 — Ejecutar los tests
-
-**Desde la terminal:**
 ```bash
 cd ms-productos
 mvn test
 ```
 
-**Desde el IDE:**
-- IntelliJ: clic derecho en la carpeta `test` → **Run All Tests**
-- VS Code: clic en el ícono ▶️ junto a cada método `@Test`
+### Resultado esperado
 
-**Ver reporte HTML:**
+```
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+```
+
+### Ejecutar un test específico
+
 ```bash
-# Después de mvn test
-# En Mac/Linux:
-open ms-productos/target/surefire-reports/index.html
-# En Windows:
-start ms-productos/target/surefire-reports/index.html
+mvn test -Dtest=ProductoServiceTest#debeRetornarListaDeProductos
+```
+
+### Ver reporte HTML
+
+```bash
+# Mac/Linux:
+open target/surefire-reports/index.html
+# Windows:
+start target/surefire-reports/index.html
+```
+
+### Estructura de tests incluidos
+
+```
+ms-productos/src/test/
+├── java/com/duoc/productos/
+│   ├── MsProductosApplicationTests.java     ← Test de contexto (carga el contexto Spring)
+│   ├── service/
+│   │   └── ProductoServiceTest.java          ← 6 tests de servicio con Mockito puro
+│   └── controller/
+│       └── ProductoControllerTest.java       ← 4 tests de controlador con MockMvc
+└── resources/
+    └── application.properties               ← Configuración H2 para tests
 ```
 
 ---
 
-## 📝 Parte 4: Entender la Estructura de un Test
+## Parte 4: Entender la Estructura de un Test
 
 ### Patrón Given-When-Then (AAA)
 
@@ -211,140 +190,217 @@ Todos los tests siguen este patrón obligatorio:
 
 ```java
 @Test
-@DisplayName("Debe retornar lista de productos cuando existen")
+@DisplayName("findAll - debe retornar lista de productos cuando existen registros")
 void debeRetornarListaDeProductos() {
-    
-    // ✅ GIVEN (Arrange): prepara los datos y configura los mocks
-    List<Producto> productosSimulados = List.of(
-        new Producto(1L, "Laptop", 999990.0, 10),
-        new Producto(2L, "Mouse", 25990.0, 50)
-    );
-    when(productoRepository.findAll()).thenReturn(productosSimulados);
 
-    // ✅ WHEN (Act): ejecuta el método que estás probando
+    // GIVEN (Arrange): prepara los datos y configura los mocks
+    List<Producto> productosSimulados = List.of(
+        new Producto(1L, "Laptop", "Laptop gaming", new BigDecimal("649990.00"), 10),
+        new Producto(2L, "Mouse", "Mouse inalámbrico", new BigDecimal("89990.00"), 25)
+    );
+    when(repository.findAll()).thenReturn(productosSimulados);
+
+    // WHEN (Act): ejecuta el método que estás probando
     List<ProductoDTO> resultado = productoService.findAll();
 
-    // ✅ THEN (Assert): verifica que el resultado es el esperado
+    // THEN (Assert): verifica que el resultado es el esperado
     assertNotNull(resultado);
     assertEquals(2, resultado.size());
     assertEquals("Laptop", resultado.get(0).getNombre());
+    verify(repository, times(1)).findAll();
 }
 ```
 
-### Test de Servicio (el más común)
+### Test de Servicio — Mockito puro (sin Spring)
 
 ```java
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)   // ← Solo Mockito, no carga contexto Spring
 class ProductoServiceTest {
 
-    // 🔧 Simula el repositorio (no toca la BD real)
-    @MockBean
-    private ProductoRepository productoRepository;
+    @Mock
+    private ProductoRepository repository;   // Simula el repositorio
 
-    // ✅ Inyecta el servicio real que queremos probar
-    @Autowired
-    private ProductoService productoService;
+    @InjectMocks
+    private ProductoService productoService; // Inyecta el mock en el servicio real
 
     @Test
-    @DisplayName("Debe retornar lista vacía si no hay productos")
-    void debeRetornarListaVaciaSiNoHayProductos() {
+    @DisplayName("findById - debe lanzar excepción cuando el ID no existe")
+    void debeLanzarExcepcionCuandoProductoNoExiste() {
         // Given
-        when(productoRepository.findAll()).thenReturn(List.of());
-
-        // When
-        List<ProductoDTO> resultado = productoService.findAll();
-
-        // Then
-        assertNotNull(resultado);
-        assertTrue(resultado.isEmpty());
-    }
-
-    @Test
-    @DisplayName("Debe lanzar excepción si producto no existe")
-    void debeLanzarExcepcionSiProductoNoExiste() {
-        // Given
-        when(productoRepository.findById(999L)).thenReturn(Optional.empty());
+        when(repository.findById(999L)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(RuntimeException.class, () -> {
-            productoService.findById(999L);
-        });
+        assertThrows(RecursoNoEncontradoException.class, () ->
+            productoService.findById(999L)
+        );
     }
 }
 ```
 
-### Test de Controlador con MockMvc
+> **¿Por qué `@ExtendWith(MockitoExtension.class)` y no `@SpringBootTest`?**
+> Con `@ExtendWith(MockitoExtension.class)` el test es **100% unitario** — no carga
+> el contexto Spring, no necesita base de datos y termina en milisegundos.
+> Úsalo siempre que puedas para tests de servicio.
+
+### Test de Controlador con MockMvc (Spring Boot 4.x)
 
 ```java
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(ProductoController.class)  // ← Solo carga la capa web, sin JPA ni BD
 class ProductoControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    // 🔧 Simula el servicio para que el controller no dependa de la BD
-    @MockBean
-    private ProductoService productoService;
+    // En Spring Boot 4.x se usa @MockitoBean (antes era @MockBean en Spring Boot 3.x)
+    @MockitoBean
+    private ProductoService service;
 
     @Test
-    @DisplayName("GET /api/productos debe retornar 200 OK con lista")
+    @DisplayName("GET /api/productos - debe retornar 200 con lista de productos")
     void debeRetornar200CuandoSePidenProductos() throws Exception {
         // Given
-        when(productoService.findAll()).thenReturn(
-            List.of(new ProductoDTO(1L, "Laptop", 999990.0))
-        );
+        when(service.findAll()).thenReturn(List.of(
+            new ProductoDTO(1L, "Laptop", "Laptop gaming", new BigDecimal("649990.00"), 10)
+        ));
 
-        // When & Then (en un solo paso con MockMvc)
+        // When & Then
         mockMvc.perform(get("/api/productos"))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$[0].nombre").value("Laptop"))
-               .andExpect(jsonPath("$[0].precio").value(999990.0));
+               .andExpect(jsonPath("$[0].precio").value(649990.00));
     }
 
     @Test
-    @DisplayName("POST /api/productos debe retornar 201 Created")
-    void debeRetornar201AlCrearProducto() throws Exception {
-        // Given
-        String jsonProducto = """
-            {
-                "nombre": "Teclado Mecánico",
-                "precio": 79990.0,
-                "stock": 15
-            }
+    @DisplayName("POST /api/productos - debe retornar 400 con datos inválidos")
+    void debeRetornar400CuandoDatosInvalidos() throws Exception {
+        // Given — nombre vacío y precio negativo
+        String json = """
+            { "nombre": "", "precio": -100, "stock": 5 }
             """;
-
-        when(productoService.crear(any())).thenReturn(
-            new ProductoDTO(3L, "Teclado Mecánico", 79990.0)
-        );
 
         // When & Then
         mockMvc.perform(post("/api/productos")
                .contentType(MediaType.APPLICATION_JSON)
-               .content(jsonProducto))
-               .andExpect(status().isCreated())
-               .andExpect(jsonPath("$.nombre").value("Teclado Mecánico"));
+               .content(json))
+               .andExpect(status().isBadRequest());
     }
 }
 ```
 
 ---
 
-## ✅ Parte 5: Aplica esto en tu Proyecto Semestral
+## Parte 5: Resolución de Errores Comunes
 
-Después de entender y ejecutar los tests de este proyecto, replica el patrón en tu proyecto:
+### Error: `Failed to load API definition — 500 /v3/api-docs`
+
+**Causa:** Versión de springdoc-openapi incompatible con Spring Boot 4.x.
+
+**Solución:** En tu `pom.xml` usa la versión **3.0.3** (no 2.x):
+
+```xml
+<!-- CORRECTO para Spring Boot 4.x -->
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>3.0.3</version>
+</dependency>
+
+<!-- INCORRECTO — solo funciona con Spring Boot 3.x -->
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>2.6.0</version>  <!-- No usar con Spring Boot 4.x -->
+</dependency>
+```
+
+---
+
+### Error: `Cannot load driver class: com.mysql.cj.jdbc.Driver` al ejecutar tests
+
+**Causa:** Los tests intentan conectarse a MySQL real, que no está corriendo.
+
+**Solución:** Agrega H2 a tu `pom.xml` en scope test y crea `src/test/resources/application.properties`:
+
+```xml
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+```properties
+# src/test/resources/application.properties
+spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+```
+
+---
+
+### Error: `Cannot resolve symbol 'MockBean'` en Spring Boot 4.x
+
+**Causa:** En Spring Boot 4.x, `@MockBean` fue reemplazado por `@MockitoBean`.
+
+**Solución:**
+
+```java
+// Spring Boot 3.x (deprecated en 4.x)
+import org.springframework.boot.test.mock.mockito.MockBean;
+@MockBean
+private ProductoService service;
+
+// Spring Boot 4.x (correcto)
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+@MockitoBean
+private ProductoService service;
+```
+
+---
+
+### Error: `docker compose up` se queda colgado o falla con `OOMKilled`
+
+**Causa:** Falta de RAM. El build de dos proyectos Maven simultáneamente requiere al menos 4 GB.
+
+**Solución:** Aumenta la memoria de Docker Desktop en Settings → Resources → Memory (mínimo 4 GB recomendado).
+
+---
+
+### Error: `Port 8081 is already in use`
+
+**Solución:**
+
+```bash
+# Detener contenedores previos
+docker compose down
+
+# O encontrar y matar el proceso que usa el puerto
+# Mac/Linux:
+lsof -i :8081 | awk 'NR>1 {print $2}' | xargs kill -9
+# Windows (PowerShell):
+netstat -ano | findstr :8081
+taskkill /PID <número_pid> /F
+```
+
+---
+
+## Parte 6: Aplica esto en tu Proyecto Semestral
 
 ### Checklist de implementación
 
-- [ ] **Dependencias**: Agregar `spring-boot-starter-test` en tu `pom.xml`
-- [ ] **2 tests de servicio**: Implementar con `@MockBean` y Mockito
-- [ ] **1 test de controlador**: Implementar con `MockMvc`
-- [ ] **Patrón AAA**: Todos los tests deben tener Given / When / Then
-- [ ] **Nombres descriptivos**: Usar `@DisplayName` en cada test
-- [ ] **Tests pasan**: `mvn test` debe terminar sin errores
-- [ ] **TESTING_PLAN.md**: Documentar tus reglas de negocio y cobertura
+- [ ] `spring-boot-starter-test` en tu `pom.xml`
+- [ ] H2 en scope test + `application.properties` en test/resources
+- [ ] **2 tests de servicio**: con `@ExtendWith(MockitoExtension.class)` y Mockito
+- [ ] **1 test de controlador**: con `@WebMvcTest` y `@MockitoBean`
+- [ ] Patrón Given / When / Then en todos los tests
+- [ ] `@DisplayName` descriptivo en cada test
+- [ ] `mvn test` pasa sin errores
+- [ ] `TESTING_PLAN.md` documentando tus reglas de negocio
 
-### Plantilla TESTING_PLAN.md para tu proyecto
+### Plantilla TESTING_PLAN.md
 
 ```markdown
 ## Plan de Pruebas Unitarias — [Nombre de tu proyecto]
@@ -353,7 +409,6 @@ Después de entender y ejecutar los tests de este proyecto, replica el patrón e
 
 1. **[Regla 1]**: Descripción de la regla.
 2. **[Regla 2]**: Descripción de la regla.
-3. **[Regla 3]**: Descripción de la regla.
 
 ### Cobertura Actual
 
@@ -361,72 +416,48 @@ Después de entender y ejecutar los tests de este proyecto, replica el patrón e
 |-------|--------|-----------------|-----------|
 | 1. [Nombre] | ✅ Cubierta | Caso feliz, caso error | — |
 | 2. [Nombre] | ⚠️ Parcial | Solo caso feliz | Caso error |
-| 3. [Nombre] | ❌ Pendiente | — | Todo |
 
 ### Reflexión y Deuda Técnica
 
-- **Riesgo identificado**: [Describe qué regla no está probada y qué podría fallar]
-- **Acción futura**: [Qué test agregarías si tuvieras más tiempo]
+- **Riesgo identificado**: [Qué regla no está probada y qué podría fallar]
+- **Acción fuerta**: [Qué test agregarías con más tiempo]
 ```
 
 ---
 
-## ❓ Preguntas Frecuentes
-
-**¿Por qué uso `@MockBean` en vez de conectarme a la BD real?**
-> Las pruebas unitarias deben ser rápidas y aisladas. Conectarse a una BD real las hace lentas y dependientes del estado de los datos. `@MockBean` simula el repositorio de forma controlada y predecible.
-
-**¿Qué diferencia hay entre `@Mock` y `@MockBean`?**
-> - `@Mock` es Mockito puro (para clases sin contexto Spring)
-> - `@MockBean` reemplaza el bean real en el contexto Spring Boot (para tests con `@SpringBootTest`)
-
-**¿Puedo ejecutar solo un test?**
-> Sí:
-> ```bash
-> mvn test -Dtest=ProductoServiceTest#debeRetornarListaDeProductos
-> ```
-
-**El `docker compose up` falla ¿qué hago?**
-> Verifica que Docker Desktop esté corriendo: busca el ícono de Docker en la barra de tareas. Si no está, ábrelo primero.
-
-**¿Cómo paro los contenedores cuando termino?**
-> ```bash
-> docker compose down
-> # Para eliminar también los datos de BD:
-> docker compose down -v
-> ```
-
----
-
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 tienda-demo-testing/
-├── docker-compose.yml              ← Levanta todo con un comando
-├── ms-productos/                   ← Microservicio de productos
-│   ├── pom.xml                     ← Dependencias Maven
-│   └── src/
-│       ├── main/java/com/duoc/productos/
-│       │   ├── controller/         ← Endpoints REST
-│       │   ├── service/            ← Lógica de negocio
-│       │   ├── repository/         ← Acceso a datos JPA
-│       │   ├── model/              ← Entidades JPA
-│       │   ├── dto/                ← DTOs de entrada/salida
-│       │   └── config/SwaggerConfig.java
-│       └── test/java/com/duoc/productos/
-│           └── MsProductosApplicationTests.java
-├── ms-pedidos/                     ← Microservicio de pedidos
+├── docker-compose.yml
+├── ms-productos/
 │   ├── pom.xml
 │   └── src/
-│       ├── main/java/com/duoc/pedidos/
-│       └── test/java/com/duoc/pedidos/
-│           └── MsPedidosApplicationTests.java
-└── README.md                       ← Esta guía
+│       ├── main/java/com/duoc/productos/
+│       │   ├── controller/ProductoController.java
+│       │   ├── service/ProductoService.java
+│       │   ├── repository/ProductoRepository.java
+│       │   ├── model/Producto.java
+│       │   ├── dto/ProductoDTO.java
+│       │   ├── dto/ProductoCreateDTO.java
+│       │   ├── exception/RecursoNoEncontradoException.java
+│       │   ├── exception/GlobalExceptionHandler.java
+│       │   └── config/SwaggerConfig.java
+│       └── test/java/com/duoc/productos/
+│           ├── MsProductosApplicationTests.java   ← Contexto Spring + H2
+│           ├── service/
+│           │   └── ProductoServiceTest.java        ← 6 tests unitarios
+│           └── controller/
+│               └── ProductoControllerTest.java     ← 4 tests de controlador
+├── ms-pedidos/
+│   ├── pom.xml
+│   └── src/...
+└── README.md
 ```
 
 ---
 
-## 👨‍🏫 Información del Curso
+## Información del Curso
 
 | Campo | Detalle |
 |-------|---------|
