@@ -5,25 +5,45 @@
 
 ---
 
-> ### ⚠️ Fix aplicado — Error en dependencias de test (2026-06-16)
+> ### 🛠️ Actualización del repositorio — 16 de junio 2026
 >
-> **Problema:** Los tres starters de test definidos originalmente en ambos `pom.xml` no existen en Spring Boot:
-> ```
-> spring-boot-starter-data-jpa-test     ← no existe
-> spring-boot-starter-validation-test   ← no existe
-> spring-boot-starter-webmvc-test       ← no existe
-> ```
-> Maven no podía resolverlos, por lo que JUnit 5 y las anotaciones `@DataJpaTest`, `@WebMvcTest` nunca llegaban al classpath y los tests no corrían.
+> Chicos, corregí un error que venía en el proyecto desde el inicio y que algunos ya detectaron al clonar el repo.
 >
-> **Solución:** Se reemplazaron los tres por el único starter oficial de test en Spring Boot:
+> **¿Qué pasaba?**
+> El `pom.xml` tenía dependencias de test que simplemente no existen en Spring Boot. Maven intentaba descargarlas, no las encontraba, y como resultado JUnit y todas las anotaciones de test (`@DataJpaTest`, etc.) nunca llegaban al proyecto — por eso los tests no corrían.
+>
+> Además, en Spring Boot 4 (la versión que usamos en este curso), la anotación `@DataJpaTest` cambió de módulo y de paquete respecto a versiones anteriores. Eso también estaba mal.
+>
+> **¿Qué corregí?**
+>
+> 1. En el `pom.xml` reemplacé las dependencias incorrectas por las que corresponden en Spring Boot 4:
+>
 > ```xml
+> <!-- Esto va en el pom.xml, en la sección de dependencias de test -->
 > <dependency>
 >     <groupId>org.springframework.boot</groupId>
 >     <artifactId>spring-boot-starter-test</artifactId>
 >     <scope>test</scope>
 > </dependency>
+> <dependency>
+>     <groupId>org.springframework.boot</groupId>
+>     <artifactId>spring-boot-data-jpa-test</artifactId>
+>     <scope>test</scope>
+> </dependency>
 > ```
-> Este único starter trae todo lo necesario: JUnit 5, Mockito, AssertJ, `@DataJpaTest`, `@WebMvcTest` y `@SpringBootTest`.
+>
+> 2. En el archivo `ProductoRepositoryTest.java` actualicé el import de `@DataJpaTest` al paquete nuevo de Spring Boot 4:
+>
+> ```java
+> // Antes (Spring Boot 3 — no usar)
+> import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+>
+> // Ahora (Spring Boot 4 — correcto)
+> import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+> ```
+>
+> **¿Qué tienen que hacer ustedes?**
+> Solo hacer `git pull` en su copia local del repo y los 23 tests deberían correr sin problemas.
 
 ---
 
