@@ -5,6 +5,28 @@
 
 ---
 
+> ### ⚠️ Fix aplicado — Error en dependencias de test (2026-06-16)
+>
+> **Problema:** Los tres starters de test definidos originalmente en ambos `pom.xml` no existen en Spring Boot:
+> ```
+> spring-boot-starter-data-jpa-test     ← no existe
+> spring-boot-starter-validation-test   ← no existe
+> spring-boot-starter-webmvc-test       ← no existe
+> ```
+> Maven no podía resolverlos, por lo que JUnit 5 y las anotaciones `@DataJpaTest`, `@WebMvcTest` nunca llegaban al classpath y los tests no corrían.
+>
+> **Solución:** Se reemplazaron los tres por el único starter oficial de test en Spring Boot:
+> ```xml
+> <dependency>
+>     <groupId>org.springframework.boot</groupId>
+>     <artifactId>spring-boot-starter-test</artifactId>
+>     <scope>test</scope>
+> </dependency>
+> ```
+> Este único starter trae todo lo necesario: JUnit 5, Mockito, AssertJ, `@DataJpaTest`, `@WebMvcTest` y `@SpringBootTest`.
+
+---
+
 ## ¿Qué es este proyecto?
 
 Repositorio de referencia para la **Unidad de Pruebas Unitarias** de DSY1103. Contiene una arquitectura de **microservicios Spring Boot** con:
